@@ -22,7 +22,9 @@ var cocos2dApp = cc.Application.extend({
         // set FPS. the default value is 1.0/60 if you don't call this
         director.setAnimationInterval( 1.0 / this.config[ 'frameRate' ] );
 
-        director.runWithScene( new this.startScene() );
+        cc.LoaderScene.preload( g_resources, function() {
+            director.replaceScene( new this.startScene() );
+        }, this );
 
         return true;
     }

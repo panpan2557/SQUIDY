@@ -12,8 +12,12 @@
         engineDir: '../../cocos2d/',
         //SingleEngineFile:'',
         appFiles:[
+            'src/resources.js',
             'src/GameLayer.js',    //add your own files in order here
-            'src/Squid.js'
+            'src/Squid.js',
+            'src/Map.js',
+            'src/jquery-1.8.3.min.js',
+            'src/jquery-collision.js'
         ]
     };
 
