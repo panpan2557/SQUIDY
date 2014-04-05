@@ -30,7 +30,6 @@ var GameLayer = cc.LayerColor.extend({
             } 
             if ( e == cc.KEY.right ) {
                 this.squid.isRight = true;
-                this.squid.resistDir = 0;
             } 
             if ( e == cc.KEY.space ) {
                 this.squid.isJump = true;

@@ -31,7 +31,7 @@
         p.style.border = 'none';
         p.insertBefore( s, d.getElementById( c.tag ) );
 
-        d.body.style.background = '#ffffff';
+        d.body.style.background = '#82b8d0';
         return;
     }
 

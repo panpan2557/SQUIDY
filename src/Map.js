@@ -6,10 +6,10 @@ var Map = cc.Node.extend({
 		this.MAP = [
 			'##############################', //30 x 20 size: 900 x 600
 			'#                            #',
-			'#                            #',
-			'#                            #',
-			'#                            #',
-			'#                            #',
+			'#       *******              #',
+			'#       *******              #',
+			'#       *******              #',
+			'#       *******              #',
 			'#                            #',
 			'#                            #',
 			'#                            #',
@@ -27,15 +27,24 @@ var Map = cc.Node.extend({
 		];
 
 		this.wallSprite = new Array();
+		this.coinSprite = new Array();
 		var i = 0;
+		var j = 0;
 		for ( var r = 0 ; r < this.HEIGHT ; r++ ) {
 			for ( var c = 0 ; c < this.WIDTH ; c++ ) {
-				if ( this.MAP[r][c]=='#' ) {
+				if ( this.MAP[r][c] == "#" ) {
 					this.wallSprite[i] = cc.Sprite.create( 'images/rockTile.png' );
 					this.wallSprite[i].setAnchorPoint( cc.p( 0, 0 ) );
 					this.wallSprite[i].setPosition( cc.p( c*30, ( this.HEIGHT - r - 1 )*30 ) );
 					this.addChild( this.wallSprite[i] );
 					i++;
+				}
+				if ( this.MAP[r][c] == "*" ) {
+					this.coinSprite[j] = cc.Sprite.create( "images/coin.png" );
+					this.coinSprite[j].setAnchorPoint( cc.p( 7.5, 7.5 ) );
+					this.coinSprite[j].setPosition( cc.p( c*30, ( this.HEIGHT - r - 1 )*30 ) );
+					this.addChild( this.coinSprite[j] );
+					j++;
 				}
 			}
 		}
