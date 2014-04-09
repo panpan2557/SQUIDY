@@ -5,7 +5,7 @@ var Squid = cc.Sprite.extend({
 		this.map = map;
 		this.wallSprite = this.map.wallSprite;
 		this.spriteIndex = Squid.INDEX_NOTCOLLIDE;
-		this.collisionDir = 0;
+		this.collisionDir = [false, false, false, false]; //[bottom, left, right, ground]
 		this.isLeft = false;
 		this.isRight = false;
 		this.isJump = false;
@@ -31,98 +31,110 @@ var Squid = cc.Sprite.extend({
 	update: function( dt ) {
 		if ( this.started ) {
 			this.squidBox =  this.getBoundingBoxToWorld();
-			this.collisionDir = 0;
+			//reset collision direction
+			for ( var i = 0 ; i < this.collisionDir.length ; i++ ) {
+				this.collisionDir[i] = false;
+			}
+
 			this.spriteIndex = Squid.INDEX_NOTCOLLIDE;
 			for ( var i = 0 ; i < this.wallSprite.length ; i++ ) { //for each wallSprites that are in the map
 				//if the squid is overlaping with some wallSprites 
 				if ( this.isCollideBottom( i ) ) {
-					this.collisionDir = Squid.COLLISION.BOTTOM;
+					this.collisionDir[0] = true;
 					this.spriteIndex = i;
+					this.vy = 0;
 					//console.log("from bottom");
-				} else if ( this.isCollideLeft( i ) ) {
-					this.collisionDir = Squid.COLLISION.LEFT;
+				} 
+				if ( this.isCollideLeft( i ) ) {
+					this.collisionDir[1] = true;
 					this.spriteIndex = i;
+					this.vx = 0;
 					//console.log("from left");
-				} else if ( this.isCollideRight( i ) ) {
-					this.collisionDir = Squid.COLLISION.RIGHT;
+				} 
+				if ( this.isCollideRight( i ) ) {
+					this.collisionDir[2] = true;
 					this.spriteIndex = i;
+					this.vx = 0;
 					//console.log("from right");
-				} else if ( this.isCollideGround( i ) ) {
-					this.collisionDir = Squid.COLLISION.GROUND;
+				} 
+				if ( this.isCollideGround( i ) ) {
+					this.collisionDir[3] = true;
 					this.spriteIndex = i;
+					if ( this.intersect ) {
+						this.vy = -this.vy;
+						this.intersect = false;
+					//change somthing false
+					}
+					if ( this.pos.y+this.vy <= cc.rectGetMaxY( this.wallSprite[ this.spriteIndex ].getBoundingBoxToWorld() ) ) {
+						this.vy = 0;
+					}
 					//console.log("from ground");
 				}
+				//console.log( this.collisionDir.toString() );
 			}
 			
 			//console.log("("+this.vx+","+this.vy+")");
 			//console.log( this.collisionDir );
-			if ( this.collisionDir == Squid.COLLISION.BOTTOM ) {
-				this.vy = 0;
-			} else if ( this.collisionDir == Squid.COLLISION.LEFT || this.collisionDir == Squid.COLLISION.RIGHT ) {
-				this.vx = 0;
-			} else if ( this.collisionDir == Squid.COLLISION.GROUND ) {
-				if ( this.intersect ) {
-				this.vy = -this.vy;
-				this.intersect = false;
-				//change somthing false
-				}
-
-				if ( this.pos.y+this.vy <= cc.rectGetMaxY( this.wallSprite[ this.spriteIndex ].getBoundingBoxToWorld() ) ) {
-					console.log(1);
-					this.vy = 0;
-				}
-			}
 
 			if ( this.spriteIndex == Squid.INDEX_NOTCOLLIDE ) {
 				this.intersect = true;
 			}
 
 			//console.log( this.vy )
-			this.updatePosition(); //normal update
+			this.normalUpdatePosition(); //normal update
 
+			//update position at last statement
 			this.setPosition( new cc.Point( this.pos.x+this.vx, this.pos.y+this.vy ) );
 		}
 	},
 
-	updatePosition: function() {
-		if ( this.collisionDir == Squid.COLLISION.GROUND ) { //if the colision is 
-			if ( this.vy + 20*Squid.G <= 0 ) {
-				this.vy = 0;
-				this.onGround = true;
+	normalUpdatePosition: function() {
+		if ( this.collisionDir[3] == true /*|| this.isCollideBottom( this.spriteIndex )*/ ) { //if the colision direction is in the ground 
+			if ( this.vy + 20*Squid.G <= 0 ) { //if next frame, the squid vy <= 0
+				this.vy = 0;	// make it 0
 			} else {
-				this.vy += 20*Squid.G;
+				this.vy += 20*Squid.G; //add the 20 times gravity to vy
 			}
 		}
+		if ( this.collisionDir[3] == false ) { //if you are free in the map
+			this.vy += Squid.G;	//you are under the gravity
+		}
+		this.keyPressMovingConditionUpdate();
+		this.freeFallUpdate();
+	},
 
-		if ( this.isJump ) {
+	keyPressMovingConditionUpdate: function() {
+		//Jumping
+		if ( this.isJump ) { //if you press spacebar (jump)
 			//console.log("on ground : "+this.onGround);
-			if ( this.spriteIndex == Squid.INDEX_NOTCOLLIDE || this.onGround || this.collisionDir == Squid.COLLISION.LEFT || this.collisionDir == Squid.COLLISION.RIGHT ) {
-				this.jump();
+			//console.log( this.onGround +", "+this.collisionDir+", "+this.spriteIndex+", "+this.vy );
+			if ( this.spriteIndex == Squid.INDEX_NOTCOLLIDE || this.collisionDir[3] == true || ( this.collisionDir[1] == true && this.collisionDir[0] == false ) || ( this.collisionDir[2] == true && this.collisionDir[0] == false ) ) {
+				//you can jump only when   you are free,   you are on the ground,         the collision dir is left       or                  right     
+				this.jump(); 
 			}
-		}
+		}		
 
-		if ( !this.onGround ) {
-			this.vy += Squid.G;	
-		} else {
-			if ( this.isJump ) {
-				this.onGround = false;
-			}
-		}
-		
-		if ( this.isLeft ) {
-			if ( this.spriteIndex == Squid.INDEX_NOTCOLLIDE || this.collisionDir != Squid.COLLISION.LEFT  ) {
+		//Going Left
+		if ( this.isLeft ) { //if you press left
+			if ( this.spriteIndex == Squid.INDEX_NOTCOLLIDE || this.collisionDir[1] == false  ) {
 				if ( this.vx > -Squid.MAX_VELOCITY ) {
 					this.vx -= Squid.TRANSLATION_VELOCITY;
 				}
 			}
 		}
+
+		//Going Right
 		if ( this.isRight ) {
-			if ( this.spriteIndex == Squid.INDEX_NOTCOLLIDE || this.collisionDir != Squid.COLLISION.RIGHT ) {
+			if ( this.spriteIndex == Squid.INDEX_NOTCOLLIDE || this.collisionDir[2] == false ) {
 				if ( this.vx < Squid.MAX_VELOCITY ) {
 					this.vx += Squid.TRANSLATION_VELOCITY; 
 				}
 			}
 		}
+	},
+
+	freeFallUpdate: function() {
+		//free fall
 		if ( !this.isLeft && !this.isRight ) {
 			if ( this.vx > 0 ) {
 				if ( this.vx - Squid.RESISTANCE < 0 ) {
@@ -134,16 +146,14 @@ var Squid = cc.Sprite.extend({
 			}
 			else if ( this.vx < 0 ) {
 				if ( this.vx + Squid.RESISTANCE > 0 ) {
-					this.vx = 0;
+					this.vx = Squid.G;
 				}
 				else {
 					this.vx += Squid.RESISTANCE;
 				}
 			}
 		}
-
 	},
-
 
 	jump: function() {
 		this.vy = Squid.JUMPING_VELOCITY;
@@ -155,24 +165,39 @@ var Squid = cc.Sprite.extend({
 	},
 
 	isOverlap: function( i ) {
+		if ( i == Squid.INDEX_NOTCOLLIDE ) {
+			return false;
+		}
 		return cc.rectOverlapsRect( this.squidBox, this.wallSprite[i].getBoundingBoxToWorld() );
 	},
 
 
 	//collision references to a squid
 	isCollideBottom: function( i ) {
+		if ( i == Squid.INDEX_NOTCOLLIDE ) {
+			return false;
+		}
 		return cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), new cc.Point( cc.rectGetMidX( this.squidBox )+this.vx, cc.rectGetMaxY( this.squidBox )+this.vy ) );
 	},
 
 	isCollideLeft: function( i ) {
+		if ( i == Squid.INDEX_NOTCOLLIDE ) {
+			return false;
+		}
 		return cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), new cc.Point( cc.rectGetMinX( this.squidBox )+this.vx, cc.rectGetMidY( this.squidBox )+this.vy ) );
 	},
 
 	isCollideRight: function( i ) {
+		if ( i == Squid.INDEX_NOTCOLLIDE ) {
+			return false;
+		}
 		return cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), new cc.Point( cc.rectGetMaxX( this.squidBox )+this.vx, cc.rectGetMidY( this.squidBox )+this.vy ) );
 	},
 
 	isCollideGround: function( i ) {
+		if ( i == Squid.INDEX_NOTCOLLIDE ) {
+			return false;
+		}
 		return cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), new cc.Point( cc.rectGetMidX( this.squidBox )+this.vx, cc.rectGetMinY( this.squidBox )+this.vy ) );
 	}
 	
