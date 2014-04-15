@@ -6,11 +6,11 @@ var Map = cc.Node.extend({
 		this.MAP = [
 			'##############################', //30 x 20 size: 900 x 600
 			'#           #                #',
-			'#           #   #########    #',
+			'#           #                #',
 			'#   ######  #                #',
-			'#   ######  #       ##########',
-			'#   #       #                #',
-			'#   #       #   ##########   #',
+			'#   ######  #                #',
+			'#   #       #   *********    #',
+			'#   #       #   #########    #',
 			'#   #   #####                #',
 			'#   #       #                #',
 			'#   #       #                #',
@@ -40,9 +40,9 @@ var Map = cc.Node.extend({
 					i++;
 				}
 				if ( this.MAP[r][c] == "*" ) {
-					this.coinSprite[j] = cc.Sprite.create( "images/coin.png" );
+					this.coinSprite[j] = new Coin();
 					this.coinSprite[j].setAnchorPoint( cc.p( 7.5, 7.5 ) );
-					this.coinSprite[j].setPosition( cc.p( c*30, ( this.HEIGHT - r - 1 )*30 ) );
+					this.coinSprite[j].setPosition( cc.p( c*30 + Map.COIN_BOUNDARY_DISTANCE, ( this.HEIGHT - r - 1 )*30 + Map.COIN_BOUNDARY_DISTANCE ) );
 					this.addChild( this.coinSprite[j] );
 					j++;
 				}
@@ -61,4 +61,5 @@ var Map = cc.Node.extend({
 			this.wallBox[s] = this.wallSprite[s].getBoundingBoxToWorld();
 		}
 	}
-})
+});
+Map.COIN_BOUNDARY_DISTANCE = 30*4;

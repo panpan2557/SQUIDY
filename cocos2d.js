@@ -17,7 +17,8 @@
             'src/Squid.js',
             'src/Map.js',
             'src/jquery-1.8.3.min.js',
-            'src/jquery-collision.js'
+            'src/jquery-collision.js',
+            'src/Coin.js'
         ]
     };
 
