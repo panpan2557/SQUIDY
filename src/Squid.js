@@ -1,9 +1,12 @@
 var Squid = cc.Sprite.extend({
-	ctor: function( map ) {
+	ctor: function( map, scoreLabel ) {
 		this._super();
 		this.initWithFile('images/squidUp.png');
 		this.map = map;
 		this.coinSprite = this.map.coinSprite;
+		this.collidedCoinIndex = -1;
+		this.scoreLabel = scoreLabel;
+		this.score = 0;
 		this.wallSprite = this.map.wallSprite;
 		this.spriteIndex = Squid.INDEX_NOTCOLLIDE;
 		this.collisionDir = [false, false, false, false]; //[bottom, left, right, ground]
@@ -19,14 +22,12 @@ var Squid = cc.Sprite.extend({
 		this.pos = this.getPosition();
 		this.started = false;
 		this.squidBox = this.getBoundingBoxToWorld();
-		this.corner = new Array();
 
 		var animation = new cc.Animation.create();
 		animation.addSpriteFrameWithFile( 'images/squidUp.png' );
 		animation.addSpriteFrameWithFile( 'images/squidDown.png' );
 		animation.setDelayPerUnit( Squid.ANIMATION_DELAY );
 		this.movingAction = cc.Animate.create( animation );
-
 	},
 
 	update: function( dt ) {
@@ -34,6 +35,7 @@ var Squid = cc.Sprite.extend({
 			this.squidBox =  this.getBoundingBoxToWorld();
 			
 			this.resetCollisionDir();
+			this.collidedCoinIndex = -1;
 
 			this.spriteIndex = Squid.INDEX_NOTCOLLIDE;
 			
@@ -97,8 +99,9 @@ var Squid = cc.Sprite.extend({
 	coinCollisionUpdate: function() {
 		for ( var i = 0 ; i < this.coinSprite.length ; i++ ) {
 			if ( this.collideWith( this.coinSprite[i] ) ) {
-				//coin disappear
-				
+				this.map.removeCoin(i);
+				this.score++;
+				this.scoreLabel.setString("score : "+this.score);
 			}
 		}
 	},

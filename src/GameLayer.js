@@ -8,12 +8,19 @@ var GameLayer = cc.LayerColor.extend({
         this.map.setPosition( cc.p( 0, 150 ) );
         this.addChild( this.map );
 
-        this.squid = new Squid( this.map );
-        this.squid.setPosition( new cc.Point(75,200) );
+        this.scoreLabel = new cc.LabelTTF.create("score : 0");
+        this.scoreLabel.setAnchorPoint( cc.p( 0, 0 ) );
+        this.scoreLabel.setPosition( cc.p( 800, 800 ) );
+        this.addChild( this.scoreLabel );
+
+        this.squid = new Squid( this.map, this.scoreLabel );
+        this.squid.setPosition( new cc.Point( 75,200 ) );
         this.addChild( this.squid, 1 );
         this.squid.scheduleUpdate();
 
         this.state = GameLayer.STATES.FRONT;
+
+        this.scheduleUpdate();
 
         return true;
     },
@@ -24,7 +31,6 @@ var GameLayer = cc.LayerColor.extend({
             this.squid.start();
         }
         if ( this.state == GameLayer.STATES.STARTED ) {
-            console.log('Down '+e);
             if ( e == cc.KEY.left ) {
                 this.squid.isLeft = true;
             } 
@@ -46,6 +52,13 @@ var GameLayer = cc.LayerColor.extend({
         }
         if ( e == cc.KEY.space ) {
             this.squid.isJump = false;
+        }
+    },
+
+    update: function() {
+        if ( this.squid.collidedCoinIndex != -1 ) {
+            //console.log( this.squid.collidedCoinIndex );
+            this.removeChild( this.squid.coinSprite[this.squid.collidedCoinIndex] );
         }
     }
 });
