@@ -25,11 +25,11 @@ var Squid = cc.Sprite.extend({
 		this.squidBox = this.getBoundingBoxToWorld();
 		this.nextBox = null;
 
-		var animation = new cc.Animation.create();
-		animation.addSpriteFrameWithFile( 'images/squidUp.png' );
-		animation.addSpriteFrameWithFile( 'images/squidDown.png' );
-		animation.setDelayPerUnit( Squid.ANIMATION_DELAY );
-		this.movingAction = cc.Animate.create( animation );
+		var jumpAni = new cc.Animation.create();
+		jumpAnin.addSpriteFrameWithFile( 'images/squidUp.png' );
+		jumpAni.addSpriteFrameWithFile( 'images/squidDown.png' );
+		jumpAni.setDelayPerUnit( Squid.ANIMATION_DELAY );
+		this.jumpingAction = cc.Animate.create( jumpAni );
 	},
 
 	update: function( dt ) {
@@ -186,7 +186,7 @@ var Squid = cc.Sprite.extend({
 
 	jump: function() {
 		this.vy = Squid.JUMPING_VELOCITY;
-		this.runAction( this.movingAction );
+		this.runAction( this.jumpingAction );
 	},
 
 	start: function() {
