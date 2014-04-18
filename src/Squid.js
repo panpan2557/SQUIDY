@@ -2,6 +2,7 @@ var Squid = cc.Sprite.extend({
 	ctor: function( map, scoreLabel ) {
 		this._super();
 		this.initWithFile('images/squidUp.png');
+		this.setAnchorPoint( cc.p( 0, 0 ) );
 		this.map = map;
 		this.coinSprite = this.map.coinSprite;
 		this.collidedCoinIndex = -1;
@@ -22,6 +23,7 @@ var Squid = cc.Sprite.extend({
 		this.pos = this.getPosition();
 		this.started = false;
 		this.squidBox = this.getBoundingBoxToWorld();
+		this.nextBox = null;
 
 		var animation = new cc.Animation.create();
 		animation.addSpriteFrameWithFile( 'images/squidUp.png' );
@@ -230,10 +232,14 @@ var Squid = cc.Sprite.extend({
 	isFreeFall: function() {
 		for ( var i = 0 ; i < this.collisionDir.length ; i++ ) {
 			if ( this.collisionDir[i] ) {
-				return false
+				return false;
 			}
 		}
 		return true;
+	},
+
+	getNextBox: function() {
+		return cc.rect( this.pos.x+this.vx, this.pos.y+this.vy, Squid.SIZE, Squid.SIZE );
 	}
 	
 

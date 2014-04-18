@@ -4,25 +4,25 @@ var Map = cc.Node.extend({
 		this.WIDTH = 30;
 		this.HEIGHT = 20;
 		this.MAP = [
-			'##############################', //30 x 20 size: 900 x 600
+			'##########################   #', //30 x 20 size: 900 x 600
 			'#                            #',
-			'#                            #',
+			'#   ******                   #',
 			'#   ######  #                #',
 			'#   ######  #                #',
 			'#   #       #   *********    #',
-			'#   #       #   #########    #',
+			'#   #   ****#   #########    #',
 			'#   #   #####                #',
 			'#   #       #                #',
-			'#   #       #                #',
+			'#   #*****  #*************   #',
 			'#   ######  ##############   #',
 			'#   #       #                #',
-			'#   #       #                #',
+			'#   #   ****#   *************#',
 			'#   #   #####   ##############',
 			'#   #       #                #',
-			'#   #       #                #',
+			'#   #***    #*************   #',
 			'#   ####    ##############   #',
 			'#   ####                     #',
-			'#   ####                     #',
+			'#   ####*********************#',
 			'##############################'
 		];
 
@@ -34,8 +34,7 @@ var Map = cc.Node.extend({
 		for ( var r = 0 ; r < this.HEIGHT ; r++ ) {
 			for ( var c = 0 ; c < this.WIDTH ; c++ ) {
 				if ( this.MAP[r][c] == "#" ) {
-					this.wallSprite[i] = cc.Sprite.create( 'images/rockTile.png' );
-					this.wallSprite[i].setAnchorPoint( cc.p( 0, 0 ) );
+					this.wallSprite[i] = new Wall();
 					this.wallSprite[i].setPosition( cc.p( c*30, ( this.HEIGHT - r - 1 )*30 ) );
 					this.addChild( this.wallSprite[i] );
 					i++;
