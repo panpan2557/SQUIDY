@@ -64,6 +64,7 @@ var Map = cc.Node.extend({
 	},
 	removeCoin: function( index ){
 		this.removeChild( this.coinSprite[index] );
+		this.coinSprite.splice( index, 1);
 	}
 });
 Map.COIN_BOUNDARY_DISTANCE = 30*4;

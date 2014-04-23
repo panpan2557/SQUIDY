@@ -26,10 +26,28 @@ var Squid = cc.Sprite.extend({
 		this.nextBox = null;
 
 		var jumpAni = new cc.Animation.create();
-		jumpAnin.addSpriteFrameWithFile( 'images/squidUp.png' );
+		jumpAni.addSpriteFrameWithFile( 'images/squidUp.png' );
 		jumpAni.addSpriteFrameWithFile( 'images/squidDown.png' );
 		jumpAni.setDelayPerUnit( Squid.ANIMATION_DELAY );
 		this.jumpingAction = cc.Animate.create( jumpAni );
+
+		var leftAni = new cc.Animation.create();
+		leftAni.addSpriteFrameWithFile( 'images/squidLeft.png' );
+		//leftAni.addSpriteFrameWithFile( 'images/squidDown.png' );
+		leftAni.setDelayPerUnit( 0.5 );
+		this.leftAction = cc.Animate.create( leftAni );
+
+		var rightAni = new cc.Animation.create();
+		rightAni.addSpriteFrameWithFile( 'images/squidRight.png' );
+		//rightAni.addSpriteFrameWithFile( 'images/squidDown.png' );
+		rightAni.setDelayPerUnit( 0.5 );
+		this.rightAction = cc.Animate.create( rightAni );
+
+		var normalAni = new cc.Animation.create();
+		normalAni.addSpriteFrameWithFile( 'images/squidDown.png' );
+		normalAni.setDelayPerUnit( 0.5 );
+		this.normalAction = cc.Animate.create( normalAni );
+
 	},
 
 	update: function( dt ) {
@@ -137,6 +155,7 @@ var Squid = cc.Sprite.extend({
 
 		//Going Left
 		if ( this.isLeft ) { //if you press left
+			this.runAction( this.leftAction );
 			if ( this.spriteIndex == Squid.INDEX_NOTCOLLIDE || this.collisionDir[1] == false  ) {
 				if ( this.vx > -Squid.MAX_VELOCITY ) {
 					this.vx -= Squid.TRANSLATION_VELOCITY;
@@ -146,11 +165,16 @@ var Squid = cc.Sprite.extend({
 
 		//Going Right
 		if ( this.isRight ) {
+			this.runAction( this.rightAction );
 			if ( this.spriteIndex == Squid.INDEX_NOTCOLLIDE || this.collisionDir[2] == false ) {
 				if ( this.vx < Squid.MAX_VELOCITY ) {
 					this.vx += Squid.TRANSLATION_VELOCITY; 
 				}
 			}
+		}
+
+		if ( !this.isRight && !this.isLeft && !this.isJump ) {
+			this.runAction( this.normalAction );
 		}
 	},
 
@@ -260,11 +284,11 @@ Squid.COLLISION = {
 
 Squid.G = -0.1;
 Squid.RESISTANCE = 0.05;
-Squid.MAX_VELOCITY = 2;
+Squid.MAX_VELOCITY = 1.7;
 Squid.JUMPING_VELOCITY = 3.5;
 Squid.STARTING_VELOCITY = 4;
 Squid.TRANSLATION_VELOCITY = 0.3;
 Squid.SIZE = 30;
-Squid.ANIMATION_DELAY = 1.7;
+Squid.ANIMATION_DELAY = 2;
 Squid.MAP_BORDER = 150;
 Squid.INDEX_NOTCOLLIDE = -1;

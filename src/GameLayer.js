@@ -1,8 +1,13 @@
 var GameLayer = cc.LayerColor.extend({
     init: function() {
+
         this._super( new cc.Color4B( 127, 127, 127, 255 ) );
         this.setPosition( new cc.Point( 0, 0 ) );
         this.setKeyboardEnabled( true );
+
+        this.bg = new cc.Sprite();
+        this.bg.init('images/bg.jpg');
+        this.addChild(this.bg);
 
         this.map = new Map();
         this.map.setPosition( cc.p( 0, 150 ) );
@@ -56,10 +61,6 @@ var GameLayer = cc.LayerColor.extend({
     },
 
     update: function() {
-        if ( this.squid.collidedCoinIndex != -1 ) {
-            //console.log( this.squid.collidedCoinIndex );
-            this.removeChild( this.squid.coinSprite[this.squid.collidedCoinIndex] );
-        }
     }
 });
 
