@@ -19,7 +19,7 @@ var GameLayer = cc.LayerColor.extend({
         this.addChild( this.scoreLabel );
 
         this.squid = new Squid( this.map, this.scoreLabel );
-        this.squid.setPosition( new cc.Point( 75,200 ) );
+        this.squid.setPosition( new cc.Point( 75,500 ) );
         this.addChild( this.squid, 1 );
         this.squid.scheduleUpdate();
 

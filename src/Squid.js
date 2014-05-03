@@ -24,6 +24,22 @@ var Squid = cc.Sprite.extend({
 		this.started = false;
 		this.squidBox = this.getBoundingBoxToWorld();
 		this.nextBox = null;
+		this.wallSpriteBox = null;
+
+		//for collision
+		this.topPoint1 = null;
+		this.topPoint2 = null;
+		this.leftPoint1 = null;
+		this.leftpoint2 = null;
+		this.rightPoint1 = null;
+		this.rightPoint2 = null;
+		this.bottomPoint1 = null;
+		this.bottomPoint2 = null;
+		this.squidMaxX = null;
+		this.squidMaxY = null;
+		this.squidMinX = null;
+		this.squidMinY = null;
+
 
 		var jumpAni = new cc.Animation.create();
 		jumpAni.addSpriteFrameWithFile( 'images/squidUp.png' );
@@ -33,13 +49,11 @@ var Squid = cc.Sprite.extend({
 
 		var leftAni = new cc.Animation.create();
 		leftAni.addSpriteFrameWithFile( 'images/squidLeft.png' );
-		//leftAni.addSpriteFrameWithFile( 'images/squidDown.png' );
 		leftAni.setDelayPerUnit( 0.5 );
 		this.leftAction = cc.Animate.create( leftAni );
 
 		var rightAni = new cc.Animation.create();
 		rightAni.addSpriteFrameWithFile( 'images/squidRight.png' );
-		//rightAni.addSpriteFrameWithFile( 'images/squidDown.png' );
 		rightAni.setDelayPerUnit( 0.5 );
 		this.rightAction = cc.Animate.create( rightAni );
 
@@ -55,17 +69,14 @@ var Squid = cc.Sprite.extend({
 			this.squidBox =  this.getBoundingBoxToWorld();
 			
 			this.resetCollisionDir();
-			this.collidedCoinIndex = -1;
-
-			this.spriteIndex = Squid.INDEX_NOTCOLLIDE;
+			
+			this.resetAllIndex();
 			
 			this.wallCollisionUpdate();
 
 			this.coinCollisionUpdate();	
 
-			if ( this.isFreeFall() ) {
-				this.canJump = true;
-			}		
+			this.jumpingSwitch();		
 
 			this.normalUpdatePosition(); //normal update
 
@@ -79,41 +90,68 @@ var Squid = cc.Sprite.extend({
 			}
 	},
 
+	resetAllIndex: function() {
+		this.collidedCoinIndex = -1;
+		this.spriteIndex = Squid.INDEX_NOTCOLLIDE;
+	},
+
 	wallCollisionUpdate: function() {
 		for ( var i = 0 ; i < this.wallSprite.length ; i++ ) { //for each wallSprites that are in the map
-			//if the squid is overlaping with some wallSprites 
-			if ( this.isCollideBottom( i ) ) {
-				this.collisionDir[0] = true;
-				this.spriteIndex = i;
-				this.vy = 0;
-				//console.log("from bottom");
-			} 
-			if ( this.isCollideLeft( i ) ) {
-				this.collisionDir[1] = true;
-				this.spriteIndex = i;
-				this.vx = 0;
-				//console.log("from left");
-			} 
-			if ( this.isCollideRight( i ) ) {
-				this.collisionDir[2] = true;
-				this.spriteIndex = i;
-				this.vx = 0;
-				//console.log("from right");
-			} 
-			if ( this.isCollideGround( i ) ) {
-				this.collisionDir[3] = true;
-				this.spriteIndex = i;
-				if ( this.canJump ) {
-					this.vy = -this.vy;
-					this.canJump = false;
-				}
-				if ( this.pos.y+this.vy <= cc.rectGetMaxY( this.wallSprite[ this.spriteIndex ].getBoundingBoxToWorld() ) ) {
+			//if the squid is overlaping with some wallSprite
+			if ( cc.rectIntersectsRect( this.getNextBox(), this.wallSprite[i].getBoundingBoxToWorld() ) ) {
+				
+				this.initCollisionCheckingPoint();
+
+				if ( this.isCollideBottom( i ) ) {
+					this.collisionDir[0] = true;
+					this.spriteIndex = i;
 					this.vy = 0;
+				} 
+				if ( this.isCollideLeft( i ) ) {
+					this.collisionDir[1] = true;
+					this.spriteIndex = i;
+					this.vx = 0;
+				} 
+				if ( this.isCollideRight( i ) ) {
+					this.collisionDir[2] = true;
+					this.spriteIndex = i;
+					this.vx = 0;
+				} 
+				if ( this.isCollideGround( i ) ) {
+					this.collisionDir[3] = true;
+					this.spriteIndex = i;
+					if ( this.canJump ) {
+						this.vy = -this.vy;
+						this.canJump = false;
+					}
+					if ( this.pos.y+this.vy <= cc.rectGetMaxY( this.wallSprite[ this.spriteIndex ].getBoundingBoxToWorld() ) ) {
+						this.vy = 0;
+					}
 				}
-				//console.log("from ground");
 			}
-			//console.log( this.collisionDir.toString() );
 		}
+	},
+
+	initCollisionCheckingPoint: function() {
+		//octogonal box (8)
+		//  1_____2
+		// 1/     \1
+		// |       |
+		// 2\_____/2
+		//  1     2
+		this.squidMaxX = cc.rectGetMaxX( this.squidBox );
+		this.squidMaxY = cc.rectGetMaxY( this.squidBox );
+		this.squidMinX = cc.rectGetMinX( this.squidBox );
+		this.squidMinY = cc.rectGetMinY( this.squidBox );
+
+		this.topPoint1 = new cc.Point( this.squidMinX+Squid.JUMPING_VELOCITY+this.vx, this.squidMaxY+Squid.JUMPING_VELOCITY+this.vy );
+		this.topPoint2 = new cc.Point( this.squidMaxX-Squid.JUMPING_VELOCITY+this.vx, this.squidMaxY+Squid.JUMPING_VELOCITY+this.vy );
+		this.leftPoint1 = new cc.Point( this.squidMinX-Squid.JUMPING_VELOCITY+this.vx, this.squidMaxY-Squid.JUMPING_VELOCITY+this.vy );
+		this.leftPoint2 = new cc.Point( this.squidMinX-Squid.JUMPING_VELOCITY+this.vx, this.squidMinY+Squid.JUMPING_VELOCITY+this.vy );
+		this.rightPoint1 = new cc.Point( this.squidMaxX+Squid.JUMPING_VELOCITY+this.vx, this.squidMaxY-Squid.JUMPING_VELOCITY+this.vy );
+		this.rightPoint2 = new cc.Point( this.squidMaxX+Squid.JUMPING_VELOCITY+this.vx, this.squidMinY+Squid.JUMPING_VELOCITY+this.vy );
+		this.bottomPoint1 = new cc.Point( this.squidMinX+Squid.JUMPING_VELOCITY+this.vx, this.squidMinY-Squid.JUMPING_VELOCITY+this.vy );
+		this.bottomPoint2 = new cc.Point( this.squidMaxX-Squid.JUMPING_VELOCITY+this.vx, this.squidMinY-Squid.JUMPING_VELOCITY+this.vy );
 	},
 
 	coinCollisionUpdate: function() {
@@ -126,8 +164,14 @@ var Squid = cc.Sprite.extend({
 		}
 	},
 
+	jumpingSwitch: function() {
+		if ( this.isFreeFall() ) {
+				this.canJump = true;
+			}
+	},
+
 	normalUpdatePosition: function() {
-		if ( this.collisionDir[3] == true /*|| this.isCollideBottom( this.spriteIndex )*/ ) { //if the colision direction is in the ground 
+		if ( this.collisionDir[3] == true ) { //if the colision direction is in the ground 
 			if ( this.vy + 20*Squid.G <= 0 ) { //if next frame, the squid vy <= 0
 				this.vy = 0;	// make it 0
 			} else {
@@ -145,11 +189,8 @@ var Squid = cc.Sprite.extend({
 	keyPressMovingConditionUpdate: function() {
 		//Jumping
 		if ( this.isJump ) { //if you press spacebar (jump)
-			//console.log("on ground : "+this.onGround);
-			//console.log( this.onGround +", "+this.collisionDir+", "+this.spriteIndex+", "+this.vy );
-			if ( this.spriteIndex == Squid.INDEX_NOTCOLLIDE || this.collisionDir[3] == true || ( this.collisionDir[1] == true && this.collisionDir[0] == false ) || ( this.collisionDir[2] == true && this.collisionDir[0] == false ) ) {
-				//you can jump only when   you are free,   you are on the ground,         the collision dir is left       or                  right     
-				this.jump(); 
+			if ( this.jumpingCondition() ) {   
+				this.jump();
 			}
 		}		
 
@@ -164,7 +205,7 @@ var Squid = cc.Sprite.extend({
 		}
 
 		//Going Right
-		if ( this.isRight ) {
+		if ( this.isRight ) { //if you press right
 			this.runAction( this.rightAction );
 			if ( this.spriteIndex == Squid.INDEX_NOTCOLLIDE || this.collisionDir[2] == false ) {
 				if ( this.vx < Squid.MAX_VELOCITY ) {
@@ -173,9 +214,15 @@ var Squid = cc.Sprite.extend({
 			}
 		}
 
-		if ( !this.isRight && !this.isLeft && !this.isJump ) {
+		if ( !this.isRight && !this.isLeft && !this.isJump ) { //if you aren't press any
 			this.runAction( this.normalAction );
 		}
+	},
+
+	jumpingCondition: function() {
+		return ( this.spriteIndex == Squid.INDEX_NOTCOLLIDE || this.collisionDir[3] == true || 
+			( this.collisionDir[1] == true && this.collisionDir[0] == false ) || 
+			( this.collisionDir[2] == true && this.collisionDir[0] == false ) );
 	},
 
 	freeFallUpdate: function() {
@@ -229,28 +276,42 @@ var Squid = cc.Sprite.extend({
 		if ( i == Squid.INDEX_NOTCOLLIDE ) {
 			return false;
 		}
-		return cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), new cc.Point( cc.rectGetMidX( this.squidBox )+this.vx, cc.rectGetMaxY( this.squidBox )+this.vy ) );
+		if ( cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), this.topPoint1 ) || cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), this.topPoint2 ) ) {
+			return true;
+		}
+		return false;
 	},
 
 	isCollideLeft: function( i ) {
 		if ( i == Squid.INDEX_NOTCOLLIDE ) {
 			return false;
 		}
-		return cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), new cc.Point( cc.rectGetMinX( this.squidBox )+this.vx, cc.rectGetMidY( this.squidBox )+this.vy ) );
+		if ( cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), this.leftPoint1 ) || cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), this.leftPoint2 ) ) {
+			return true;
+		} else if ( cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), this.leftPoint1 ) ) {
+			return true;
+		}
+		return false;
 	},
 
 	isCollideRight: function( i ) {
 		if ( i == Squid.INDEX_NOTCOLLIDE ) {
 			return false;
 		}
-		return cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), new cc.Point( cc.rectGetMaxX( this.squidBox )+this.vx, cc.rectGetMidY( this.squidBox )+this.vy ) );
+		if ( cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), this.rightPoint1 ) || cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), this.rightPoint2 ) ) {
+			return true;
+		} else if ( cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), this.rightPoint1 ) ) {
+			return true;
+		}
 	},
 
 	isCollideGround: function( i ) {
 		if ( i == Squid.INDEX_NOTCOLLIDE ) {
 			return false;
 		}
-		return cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), new cc.Point( cc.rectGetMidX( this.squidBox )+this.vx, cc.rectGetMinY( this.squidBox )+this.vy ) );
+		if ( cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), this.bottomPoint1 ) || cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), this.bottomPoint2 ) ) {
+			return true;
+		}
 	},
 
 	isFreeFall: function() {
@@ -264,8 +325,7 @@ var Squid = cc.Sprite.extend({
 
 	getNextBox: function() {
 		return cc.rect( this.pos.x+this.vx, this.pos.y+this.vy, Squid.SIZE, Squid.SIZE );
-	}
-	
+	},	
 
 });
 

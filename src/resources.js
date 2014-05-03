@@ -4,5 +4,5 @@ var g_resources = [
 	{ src: 'images/squidDown.png' },
 	{ src: 'images/coin.png' },
 	{ src: 'images/squidLeft.png' },
-	{ src: 'images/suqidRight.png' }
+	{ src: 'images/squidRight.png' }
 ];

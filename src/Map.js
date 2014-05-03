@@ -6,7 +6,7 @@ var Map = cc.Node.extend({
 		this.MAP = [
 			'##########################   #', //30 x 20 size: 900 x 600
 			'#                            #',
-			'#   ******                   #',
+			'#   ******          *****    #',
 			'#   ######  #                #',
 			'#   ######  #                #',
 			'#   #       #   *********    #',
@@ -54,7 +54,7 @@ var Map = cc.Node.extend({
 		this.wallPosition = new Array();
 		for ( var s = 0 ; s < this.wallSprite.length ; s++ ) {
 			this.wallPosition[s] = this.wallSprite[s].getPosition();
-			console.log(this.wallPosition[s].x+','+this.wallPosition[s].y);
+			//console.log(this.wallPosition[s].x+','+this.wallPosition[s].y);
 		}
 
 		this.wallBox = new Array();
