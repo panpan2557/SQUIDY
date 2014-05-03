@@ -1,15 +1,19 @@
 var GameLayer = cc.LayerColor.extend({
     init: function() {
-
         this._super( new cc.Color4B( 127, 127, 127, 255 ) );
         this.setPosition( new cc.Point( 0, 0 ) );
         this.setKeyboardEnabled( true );
+
+        this.setAnchorPoint( cc.p( 0, 0 ) );
 
         this.bg = new cc.Sprite();
         this.bg.init('images/bg.jpg');
         this.addChild(this.bg);
 
-        this.map = new Map();
+        // var actionBy = cc.MoveTo.create( 1, cc.p( 0, -600 ) );
+        // this.runAction( actionBy );
+
+        this.map = new Map( this );
         this.map.setPosition( cc.p( 0, 150 ) );
         this.addChild( this.map );
 
@@ -22,6 +26,8 @@ var GameLayer = cc.LayerColor.extend({
         this.squid.setPosition( new cc.Point( 75,500 ) );
         this.addChild( this.squid, 1 );
         this.squid.scheduleUpdate();
+
+        this.map.addSquidToCheckPoint( this.squid );
 
         this.state = GameLayer.STATES.FRONT;
 
@@ -69,12 +75,4 @@ GameLayer.STATES = {
     STARTED: 2
 }
 
-var StartScene = cc.Scene.extend({
-    onEnter: function() {
-        this._super();
-        var layer = new GameLayer();
-        layer.init();
-        this.addChild( layer );
-    }
-});
 

@@ -19,7 +19,9 @@
             'src/jquery-1.8.3.min.js',
             'src/jquery-collision.js',
             'src/Coin.js',
-            'src/Wall.js'
+            'src/Wall.js',
+            'src/CheckPoint.js',
+            'src/MainGameLayer.js'
         ]
     };
 

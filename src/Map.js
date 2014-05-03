@@ -1,10 +1,13 @@
 var Map = cc.Node.extend({
-	ctor: function() {
+	ctor: function( gameLayer ) {
 		this._super();
+
+		this.gameLayer = gameLayer;
+
 		this.WIDTH = 30;
 		this.HEIGHT = 20;
 		this.MAP = [
-			'##########################   #', //30 x 20 size: 900 x 600
+			'##########################ccc#', //30 x 20 size: 900 x 600
 			'#                            #',
 			'#   ******          *****    #',
 			'#   ######  #                #',
@@ -28,8 +31,10 @@ var Map = cc.Node.extend({
 
 		this.wallSprite = new Array();
 		this.coinSprite = new Array();
+		this.checkPoint = new Array();
 		var i = 0;
 		var j = 0;
+		var k = 0;
 
 		for ( var r = 0 ; r < this.HEIGHT ; r++ ) {
 			for ( var c = 0 ; c < this.WIDTH ; c++ ) {
@@ -46,6 +51,12 @@ var Map = cc.Node.extend({
 					this.addChild( this.coinSprite[j] );
 					j++;
 				}
+				if ( this.MAP[r][c] == "c" ) {
+					this.checkPoint[k] = new CheckPoint( this.gameLayer );
+					this.checkPoint[k].setPosition( cc.p( c*30, ( this.HEIGHT - r - 1 )*30 ) );
+					this.addChild( this.checkPoint[k] );
+					k++;
+				}
 			}
 		}
 
@@ -54,7 +65,6 @@ var Map = cc.Node.extend({
 		this.wallPosition = new Array();
 		for ( var s = 0 ; s < this.wallSprite.length ; s++ ) {
 			this.wallPosition[s] = this.wallSprite[s].getPosition();
-			//console.log(this.wallPosition[s].x+','+this.wallPosition[s].y);
 		}
 
 		this.wallBox = new Array();
@@ -62,9 +72,18 @@ var Map = cc.Node.extend({
 			this.wallBox[s] = this.wallSprite[s].getBoundingBoxToWorld();
 		}
 	},
+
 	removeCoin: function( index ){
 		this.removeChild( this.coinSprite[index] );
 		this.coinSprite.splice( index, 1);
+	},
+
+	addSquidToCheckPoint: function( squid ) {
+		for ( var i = 0 ; i < this.checkPoint.length ; i++ ) {
+			this.checkPoint[i].addSquid( squid );
+			this.checkPoint[i].scheduleUpdate();
+		}
 	}
+
 });
 Map.COIN_BOUNDARY_DISTANCE = 30*4;

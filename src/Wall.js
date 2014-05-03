@@ -1,7 +1,7 @@
 var Wall = cc.Sprite.extend({
 	ctor: function() {
 		this._super();
-		this.initWithFile("images/rockTile.png");
+		this.initWithFile("images/rockTile3.png");
 		this.setAnchorPoint( cc.p( 0, 0 ) );
 		this.topLeftCorner = new cc.rect( 0, Wall.CORNER_SIZE, Wall.CORNER_SIZE, Wall.CORNER_SIZE );
 		this.topRightCorner = new cc.rect( Wall.CORNER_SIZE, Wall.CORNER_SIZE, Wall.CORNER_SIZE, Wall.CORNER_SIZE );
