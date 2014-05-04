@@ -1,20 +1,17 @@
-var GameLayer = cc.LayerColor.extend({
+var GameLayer = cc.Layer.extend({
     init: function() {
-        this._super( new cc.Color4B( 127, 127, 127, 255 ) );
-        this.setPosition( new cc.Point( 0, 0 ) );
+        this._super();
+        this.gameLayerX = 0;
+        this.gameLayerY = 0;
+        this.setPosition( new cc.Point( this.gameLayerX, this.gameLayerY ) );
         this.setKeyboardEnabled( true );
 
         this.setAnchorPoint( cc.p( 0, 0 ) );
-
-        this.bg = new cc.Sprite();
-        this.bg.init('images/bg.jpg');
-        this.addChild(this.bg);
 
         // var actionBy = cc.MoveTo.create( 1, cc.p( 0, -600 ) );
         // this.runAction( actionBy );
 
         this.map = new Map( this );
-        this.map.setPosition( cc.p( 0, 150 ) );
         this.addChild( this.map );
 
         this.scoreLabel = new cc.LabelTTF.create("score : 0");
@@ -34,6 +31,10 @@ var GameLayer = cc.LayerColor.extend({
         this.scheduleUpdate();
 
         return true;
+    },
+
+    addScene: function( scene ) {
+        this.scene = scene;
     },
 
     onKeyDown: function( e ) {
@@ -67,6 +68,7 @@ var GameLayer = cc.LayerColor.extend({
     },
 
     update: function() {
+        //console.log( this.map.getPosition().x +", "+ this.map.getPosition().y );
     }
 });
 

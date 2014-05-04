@@ -1,13 +1,13 @@
 var Map = cc.Node.extend({
 	ctor: function( gameLayer ) {
 		this._super();
-
+		// this.setPosition( cc.p( 0, 150 ) );
 		this.gameLayer = gameLayer;
 
 		this.WIDTH = 30;
 		this.HEIGHT = 20;
 		this.MAP = [
-			'##########################ccc#', //30 x 20 size: 900 x 600
+			'#ccc##########################', //30 x 20 size: 900 x 600
 			'#                            #',
 			'#   ******          *****    #',
 			'#   ######  #                #',
@@ -40,20 +40,20 @@ var Map = cc.Node.extend({
 			for ( var c = 0 ; c < this.WIDTH ; c++ ) {
 				if ( this.MAP[r][c] == "#" ) {
 					this.wallSprite[i] = new Wall();
-					this.wallSprite[i].setPosition( cc.p( c*30, ( this.HEIGHT - r - 1 )*30 ) );
+					this.wallSprite[i].setPosition( cc.p( c*30, ( this.HEIGHT - r - 1 )*30+150 ) );
 					this.addChild( this.wallSprite[i] );
 					i++;
 				}
 				if ( this.MAP[r][c] == "*" ) {
 					this.coinSprite[j] = new Coin();
-					this.coinSprite[j].setAnchorPoint( cc.p( 7.5, 7.5 ) );
-					this.coinSprite[j].setPosition( cc.p( c*30 + Map.COIN_BOUNDARY_DISTANCE, ( this.HEIGHT - r - 1 )*30 + Map.COIN_BOUNDARY_DISTANCE ) );
+					this.coinSprite[j].setAnchorPoint( cc.p( 0, 0 ) );
+					this.coinSprite[j].setPosition( cc.p( c*30+10, ( this.HEIGHT - r - 1 )*30+10+150 ) );
 					this.addChild( this.coinSprite[j] );
 					j++;
 				}
 				if ( this.MAP[r][c] == "c" ) {
-					this.checkPoint[k] = new CheckPoint( this.gameLayer );
-					this.checkPoint[k].setPosition( cc.p( c*30, ( this.HEIGHT - r - 1 )*30 ) );
+					this.checkPoint[k] = new CheckPoint( this.gameLayer, this );
+					this.checkPoint[k].setPosition( cc.p( c*30, ( this.HEIGHT - r - 1 )*30+150 ) );
 					this.addChild( this.checkPoint[k] );
 					k++;
 				}
@@ -69,7 +69,7 @@ var Map = cc.Node.extend({
 
 		this.wallBox = new Array();
 		for ( var s = 0 ; s < this.wallSprite.length ; s++ ) {
-			this.wallBox[s] = this.wallSprite[s].getBoundingBoxToWorld();
+			this.wallBox[s] = this.wallSprite[s].getBoundingBox();
 		}
 	},
 

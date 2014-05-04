@@ -22,7 +22,7 @@ var Squid = cc.Sprite.extend({
 		this.resist = Squid.TRANSLATION_VELOCITY;
 		this.pos = this.getPosition();
 		this.started = false;
-		this.squidBox = this.getBoundingBoxToWorld();
+		this.squidBox = this.getBoundingBox();
 		this.nextBox = null;
 		this.wallSpriteBox = null;
 
@@ -66,7 +66,7 @@ var Squid = cc.Sprite.extend({
 
 	update: function( dt ) {
 		if ( this.started ) {
-			this.squidBox =  this.getBoundingBoxToWorld();
+			this.squidBox =  this.getBoundingBox();
 			
 			this.resetCollisionDir();
 			
@@ -98,7 +98,7 @@ var Squid = cc.Sprite.extend({
 	wallCollisionUpdate: function() {
 		for ( var i = 0 ; i < this.wallSprite.length ; i++ ) { //for each wallSprites that are in the map
 			//if the squid is overlaping with some wallSprite
-			if ( cc.rectIntersectsRect( this.getNextBox(), this.wallSprite[i].getBoundingBoxToWorld() ) ) {
+			if ( cc.rectOverlapsRect( this.getNextBox(), this.wallSprite[i].getBoundingBox() ) ) {
 				
 				this.initCollisionCheckingPoint();
 
@@ -124,7 +124,7 @@ var Squid = cc.Sprite.extend({
 						this.vy = -this.vy;
 						this.canJump = false;
 					}
-					if ( this.pos.y+this.vy <= cc.rectGetMaxY( this.wallSprite[ this.spriteIndex ].getBoundingBoxToWorld() ) ) {
+					if ( this.pos.y+this.vy <= cc.rectGetMaxY( this.wallSprite[ this.spriteIndex ].getBoundingBox() ) ) {
 						this.vy = 0;
 					}
 				}
@@ -252,7 +252,7 @@ var Squid = cc.Sprite.extend({
 	},
 
 	collideWith: function( sprite ) {
-		return cc.rectOverlapsRect( this.squidBox, sprite.getBoundingBoxToWorld() );
+		return cc.rectOverlapsRect( this.squidBox, sprite.getBoundingBox() );
 	},
 
 	jump: function() {
@@ -268,7 +268,7 @@ var Squid = cc.Sprite.extend({
 		if ( i == Squid.INDEX_NOTCOLLIDE ) {
 			return false;
 		}
-		return cc.rectOverlapsRect( this.squidBox, this.wallSprite[i].getBoundingBoxToWorld() );
+		return cc.rectOverlapsRect( this.squidBox, this.wallSprite[i].getBoundingBox() );
 	},
 
 	//collision references to a squid
@@ -276,7 +276,7 @@ var Squid = cc.Sprite.extend({
 		if ( i == Squid.INDEX_NOTCOLLIDE ) {
 			return false;
 		}
-		if ( cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), this.topPoint1 ) || cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), this.topPoint2 ) ) {
+		if ( cc.rectContainsPoint( this.wallSprite[i].getBoundingBox(), this.topPoint1 ) || cc.rectContainsPoint( this.wallSprite[i].getBoundingBox(), this.topPoint2 ) ) {
 			return true;
 		}
 		return false;
@@ -286,9 +286,9 @@ var Squid = cc.Sprite.extend({
 		if ( i == Squid.INDEX_NOTCOLLIDE ) {
 			return false;
 		}
-		if ( cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), this.leftPoint1 ) || cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), this.leftPoint2 ) ) {
+		if ( cc.rectContainsPoint( this.wallSprite[i].getBoundingBox(), this.leftPoint1 ) || cc.rectContainsPoint( this.wallSprite[i].getBoundingBox(), this.leftPoint2 ) ) {
 			return true;
-		} else if ( cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), this.leftPoint1 ) ) {
+		} else if ( cc.rectContainsPoint( this.wallSprite[i].getBoundingBox(), this.leftPoint1 ) ) {
 			return true;
 		}
 		return false;
@@ -298,9 +298,11 @@ var Squid = cc.Sprite.extend({
 		if ( i == Squid.INDEX_NOTCOLLIDE ) {
 			return false;
 		}
-		if ( cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), this.rightPoint1 ) || cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), this.rightPoint2 ) ) {
+		if ( cc.rectContainsPoint( this.wallSprite[i].getBoundingBox(), this.rightPoint1 ) || cc.rectContainsPoint( this.wallSprite[i].getBoundingBox(), this.rightPoint2 ) ) {
+			console.log(1);
 			return true;
-		} else if ( cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), this.rightPoint1 ) ) {
+		} else if ( cc.rectContainsPoint( this.wallSprite[i].getBoundingBox(), this.rightPoint1 ) ) {
+			console.log(1);
 			return true;
 		}
 	},
@@ -309,7 +311,7 @@ var Squid = cc.Sprite.extend({
 		if ( i == Squid.INDEX_NOTCOLLIDE ) {
 			return false;
 		}
-		if ( cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), this.bottomPoint1 ) || cc.rectContainsPoint( this.wallSprite[i].getBoundingBoxToWorld(), this.bottomPoint2 ) ) {
+		if ( cc.rectContainsPoint( this.wallSprite[i].getBoundingBox(), this.bottomPoint1 ) || cc.rectContainsPoint( this.wallSprite[i].getBoundingBox(), this.bottomPoint2 ) ) {
 			return true;
 		}
 	},
@@ -325,7 +327,11 @@ var Squid = cc.Sprite.extend({
 
 	getNextBox: function() {
 		return cc.rect( this.pos.x+this.vx, this.pos.y+this.vy, Squid.SIZE, Squid.SIZE );
-	},	
+	},
+
+	updateWallSprite: function() {
+
+	}	
 
 });
 
