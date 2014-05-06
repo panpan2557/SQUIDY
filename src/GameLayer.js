@@ -14,17 +14,14 @@ var GameLayer = cc.Layer.extend({
         this.map = new Map( this );
         this.addChild( this.map );
 
-        this.scoreLabel = new cc.LabelTTF.create("score : 0");
-        this.scoreLabel.setAnchorPoint( cc.p( 0, 0 ) );
-        this.scoreLabel.setPosition( cc.p( 800, 800 ) );
-        this.addChild( this.scoreLabel );
-
-        this.squid = new Squid( this.map, this.scoreLabel );
+        this.squid = new Squid( this.map );
         this.squid.setPosition( new cc.Point( 75,500 ) );
         this.addChild( this.squid, 1 );
         this.squid.scheduleUpdate();
 
-        this.map.addSquidToCheckPoint( this.squid );
+        this.actionIsDone = false;
+
+        this.map.scheduleUpdate();
 
         this.state = GameLayer.STATES.FRONT;
 
@@ -65,6 +62,11 @@ var GameLayer = cc.Layer.extend({
         if ( e == cc.KEY.space ) {
             this.squid.isJump = false;
         }
+    },
+
+    addScoreLabel: function( scoreLabel ) {
+        this.scoreLabel = scoreLabel;
+        this.squid.addScoreLabel( this.scoreLabel );
     },
 
     update: function() {

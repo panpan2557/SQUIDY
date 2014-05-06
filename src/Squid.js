@@ -1,12 +1,11 @@
 var Squid = cc.Sprite.extend({
-	ctor: function( map, scoreLabel ) {
+	ctor: function( map ) {
 		this._super();
 		this.initWithFile('images/squidUp.png');
 		this.setAnchorPoint( cc.p( 0, 0 ) );
 		this.map = map;
 		this.coinSprite = this.map.coinSprite;
 		this.collidedCoinIndex = -1;
-		this.scoreLabel = scoreLabel;
 		this.score = 0;
 		this.wallSprite = this.map.wallSprite;
 		this.spriteIndex = Squid.INDEX_NOTCOLLIDE;
@@ -25,6 +24,7 @@ var Squid = cc.Sprite.extend({
 		this.squidBox = this.getBoundingBox();
 		this.nextBox = null;
 		this.wallSpriteBox = null;
+		this.initialScroll = 0;
 
 		//for collision
 		this.topPoint1 = null;
@@ -238,7 +238,7 @@ var Squid = cc.Sprite.extend({
 			}
 			else if ( this.vx < 0 ) {
 				if ( this.vx + Squid.RESISTANCE > 0 ) {
-					this.vx = Squid.G;
+					this.vx = 0;
 				}
 				else {
 					this.vx += Squid.RESISTANCE;
@@ -299,10 +299,8 @@ var Squid = cc.Sprite.extend({
 			return false;
 		}
 		if ( cc.rectContainsPoint( this.wallSprite[i].getBoundingBox(), this.rightPoint1 ) || cc.rectContainsPoint( this.wallSprite[i].getBoundingBox(), this.rightPoint2 ) ) {
-			console.log(1);
 			return true;
 		} else if ( cc.rectContainsPoint( this.wallSprite[i].getBoundingBox(), this.rightPoint1 ) ) {
-			console.log(1);
 			return true;
 		}
 	},
@@ -329,8 +327,8 @@ var Squid = cc.Sprite.extend({
 		return cc.rect( this.pos.x+this.vx, this.pos.y+this.vy, Squid.SIZE, Squid.SIZE );
 	},
 
-	updateWallSprite: function() {
-
+	addScoreLabel: function( scoreLabel ) {
+		this.scoreLabel = scoreLabel;
 	}	
 
 });
@@ -348,11 +346,11 @@ Squid.COLLISION = {
 	GROUND: 4
 };
 
-Squid.G = -0.2;
+Squid.G = -0.1;
 Squid.RESISTANCE = 0.05;
-Squid.MAX_VELOCITY = 1.7;
+Squid.MAX_VELOCITY = 2.5;
 Squid.JUMPING_VELOCITY = 3.5;
-Squid.STARTING_VELOCITY = 4;
+Squid.STARTING_VELOCITY = 5;
 Squid.TRANSLATION_VELOCITY = 0.4;
 Squid.SIZE = 30;
 Squid.ANIMATION_DELAY = 2;
