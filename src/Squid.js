@@ -25,6 +25,8 @@ var Squid = cc.Sprite.extend({
 		this.nextBox = null;
 		this.wallSpriteBox = null;
 		this.initialScroll = 0;
+		this.life = Squid.INITIAL_LIVES;
+		this.isDead = false;
 
 		//for collision
 		this.topPoint1 = null;
@@ -66,6 +68,10 @@ var Squid = cc.Sprite.extend({
 
 	update: function( dt ) {
 		if ( this.started ) {
+			if ( this.life == 0 ) {
+				this.die();
+			}
+
 			this.squidBox =  this.getBoundingBox();
 			
 			this.resetCollisionDir();
@@ -260,6 +266,32 @@ var Squid = cc.Sprite.extend({
 		this.runAction( this.jumpingAction );
 	},
 
+	hurt: function( amount ) {
+		console.log("it's hurt!");
+		if ( this.life -= amount < 0 ) {
+			this.life = 0;
+		} else {
+			this.life -= amount;
+		}
+		//run hurt animation
+		if ( this.life <= 0 ) {
+			this.die();
+		}
+	},
+
+	die: function() {
+		this.vx = 0;
+		this.vy = 0;
+		this.unscheduleUpdate();
+		var dieAction = null;
+		if ( this.life == 0 )
+			dieAction = cc.MoveBy.create( 3, cc.p( 0, -700 ) );
+		else
+			dieAction = cc.MoveBy.create( 80, cc.p( 0, -700 ) );
+		this.runAction( dieAction );
+		this.isDead = true;
+	},
+
 	start: function() {
 		this.started = true;
 	},
@@ -303,6 +335,7 @@ var Squid = cc.Sprite.extend({
 		} else if ( cc.rectContainsPoint( this.wallSprite[i].getBoundingBox(), this.rightPoint1 ) ) {
 			return true;
 		}
+		return false;
 	},
 
 	isCollideGround: function( i ) {
@@ -327,9 +360,30 @@ var Squid = cc.Sprite.extend({
 		return cc.rect( this.pos.x+this.vx, this.pos.y+this.vy, Squid.SIZE, Squid.SIZE );
 	},
 
+	getNextOctaBox: function() { // use in urchin
+		this.squidMaxX = cc.rectGetMaxX( this.squidBox );
+		this.squidMaxY = cc.rectGetMaxY( this.squidBox );
+		this.squidMinX = cc.rectGetMinX( this.squidBox );
+		this.squidMinY = cc.rectGetMinY( this.squidBox );
+
+		var octaBox = [];
+
+		octaBox[0] = new cc.Point( this.squidMinX+Squid.JUMPING_VELOCITY+this.vx, this.squidMaxY+Squid.JUMPING_VELOCITY+this.vy );
+		octaBox[1] = new cc.Point( this.squidMaxX-Squid.JUMPING_VELOCITY+this.vx, this.squidMaxY+Squid.JUMPING_VELOCITY+this.vy );
+		octaBox[2] = new cc.Point( this.squidMinX-Squid.JUMPING_VELOCITY+this.vx, this.squidMaxY-Squid.JUMPING_VELOCITY+this.vy );
+		octaBox[3] = new cc.Point( this.squidMinX-Squid.JUMPING_VELOCITY+this.vx, this.squidMinY+Squid.JUMPING_VELOCITY+this.vy );
+		octaBox[4] = new cc.Point( this.squidMaxX+Squid.JUMPING_VELOCITY+this.vx, this.squidMaxY-Squid.JUMPING_VELOCITY+this.vy );
+		octaBox[5] = new cc.Point( this.squidMaxX+Squid.JUMPING_VELOCITY+this.vx, this.squidMinY+Squid.JUMPING_VELOCITY+this.vy );
+		octaBox[6] = new cc.Point( this.squidMinX+Squid.JUMPING_VELOCITY+this.vx, this.squidMinY-Squid.JUMPING_VELOCITY+this.vy );
+		octaBox[7] = new cc.Point( this.squidMaxX-Squid.JUMPING_VELOCITY+this.vx, this.squidMinY-Squid.JUMPING_VELOCITY+this.vy );
+
+		return octaBox;
+	},
+
 	addScoreLabel: function( scoreLabel ) {
 		this.scoreLabel = scoreLabel;
-	}	
+	},
+
 
 });
 
@@ -356,3 +410,4 @@ Squid.SIZE = 30;
 Squid.ANIMATION_DELAY = 2;
 Squid.MAP_BORDER = 150;
 Squid.INDEX_NOTCOLLIDE = -1;
+Squid.INITIAL_LIVES = 3;

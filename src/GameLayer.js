@@ -1,10 +1,11 @@
 var GameLayer = cc.Layer.extend({
-    init: function() {
+    init: function( timeGauge ) {
         this._super();
         this.gameLayerX = 0;
         this.gameLayerY = 0;
         this.setPosition( new cc.Point( this.gameLayerX, this.gameLayerY ) );
         this.setKeyboardEnabled( true );
+
 
         this.setAnchorPoint( cc.p( 0, 0 ) );
 
@@ -18,6 +19,8 @@ var GameLayer = cc.Layer.extend({
         this.squid.setPosition( new cc.Point( 75,500 ) );
         this.addChild( this.squid, 1 );
         this.squid.scheduleUpdate();
+
+        this.timeGauge = timeGauge;
 
         this.actionIsDone = false;
 
@@ -34,12 +37,23 @@ var GameLayer = cc.Layer.extend({
         this.scene = scene;
     },
 
+    addScoreLabel: function( scoreLabel ) {
+        this.scoreLabel = scoreLabel;
+        this.squid.addScoreLabel( this.scoreLabel );
+    },
+
+    addTimeGauge: function( timeGauge ) {
+        this.timeGauge = timeGauge;
+        // this.squid.addTimeGauge
+    },
+
     onKeyDown: function( e ) {
         if ( this.state == GameLayer.STATES.FRONT ) {
             this.state = GameLayer.STATES.STARTED;
             this.squid.start();
         }
         if ( this.state == GameLayer.STATES.STARTED ) {
+            this.timeGauge.scheduleUpdate();
             if ( e == cc.KEY.left ) {
                 this.squid.isLeft = true;
             } 
@@ -64,13 +78,11 @@ var GameLayer = cc.Layer.extend({
         }
     },
 
-    addScoreLabel: function( scoreLabel ) {
-        this.scoreLabel = scoreLabel;
-        this.squid.addScoreLabel( this.scoreLabel );
-    },
-
     update: function() {
-        //console.log( this.map.getPosition().x +", "+ this.map.getPosition().y );
+        if ( this.timeGauge.isTimeOut ) {
+            this.squid.die();
+            //console.log(1);
+        }
     }
 });
 

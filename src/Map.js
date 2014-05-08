@@ -1,7 +1,6 @@
 var Map = cc.Node.extend({
 	ctor: function( gameLayer ) {
 		this._super();
-		// this.setPosition( cc.p( 0, 150 ) );
 		this.gameLayer = gameLayer;
 
 		this.WIDTH = 30;
@@ -12,33 +11,9 @@ var Map = cc.Node.extend({
 		this.wallSprite = [];
 		this.coinSprite = [];
 		this.checkPoint = [];
-		// var i = 0;
-		// var j = 0;
-		// var k = 0;
+		this.urchin = [];
+		this.bonusTime = [];
 
-		// for ( var r = 0 ; r < this.HEIGHT ; r++ ) {
-		// 	for ( var c = 0 ; c < this.WIDTH ; c++ ) {
-		// 		if ( this.MAP[r][c] == "#" ) {
-		// 			this.wallSprite[i] = new Wall();
-		// 			this.wallSprite[i].setPosition( cc.p( c*30, ( this.HEIGHT - r - 1 )*30+150 ) );
-		// 			this.addChild( this.wallSprite[i] );
-		// 			i++;
-		// 		}
-		// 		if ( this.MAP[r][c] == "*" ) {
-		// 			this.coinSprite[j] = new Coin();
-		// 			this.coinSprite[j].setAnchorPoint( cc.p( 0, 0 ) );
-		// 			this.coinSprite[j].setPosition( cc.p( c*30+10, ( this.HEIGHT - r - 1 )*30+10+150 ) );
-		// 			this.addChild( this.coinSprite[j] );
-		// 			j++;
-		// 		}
-		// 		if ( this.MAP[r][c] == "c" ) {
-		// 			this.checkPoint[k] = new CheckPoint( this.gameLayer, this );
-		// 			this.checkPoint[k].setPosition( cc.p( c*30, ( this.HEIGHT - r - 1 )*30+150 ) );
-		// 			this.addChild( this.checkPoint[k] );
-		// 			k++;
-		// 		}
-		// 	}
-		// }
 		this.mapLevel = 0;
 		this.drawMap( Map.maps[this.mapLevel] );
 
@@ -47,45 +22,45 @@ var Map = cc.Node.extend({
 	},
 
 	drawMap: function( map ) {
-		var i = this.wallSprite.length;
-		var j = this.coinSprite.length;
-		var k = this.checkPoint.length;
+		// var i = this.wallSprite.length;
+		// var j = this.coinSprite.length;
+		// var k = this.checkPoint.length;
+		// var l = this.urchin.length;
 
 		for ( var r = 0 ; r < this.HEIGHT ; r++ ) {
 			for ( var c = 0 ; c < this.WIDTH ; c++ ) {
 				if ( map[r][c] == "#" ) {
-					var wallSpritee = new Wall();
-					wallSpritee.setPosition( cc.p( c*30, ( this.HEIGHT - r - 1 )*30+150+this.nextMapIndicator ) );
-					this.addChild( wallSpritee );
-					this.wallSprite.push( wallSpritee );
-					// this.wallSprite[i] = new Wall();
-					// this.wallSprite[i].setPosition( cc.p( c*30, ( this.HEIGHT - r - 1 )*30+150+this.nextMapIndicator ) );
-					// this.addChild( this.wallSprite[i] );
-					// i++;
+					var sprite = new Wall();
+					sprite.setPosition( cc.p( c*30, ( this.HEIGHT - r - 1 )*30+150+this.nextMapIndicator ) );
+					this.addChild( sprite );
+					this.wallSprite.push( sprite );
 				}
 				if ( map[r][c] == "*" ) {
-					var wallSpritee = new Coin();
-					wallSpritee.setPosition( cc.p( c*30+10, ( this.HEIGHT - r - 1 )*30+10+150+this.nextMapIndicator ) );
-					this.addChild( wallSpritee );
-					this.coinSprite.push( wallSpritee );
-					// this.coinSprite[j] = new Coin();
-					// this.coinSprite[j].setAnchorPoint( cc.p( 0, 0 ) );
-					// this.coinSprite[j].setPosition( cc.p( c*30+10, ( this.HEIGHT - r - 1 )*30+10+150+this.nextMapIndicator ) );
-					// this.addChild( this.coinSprite[j] );
-					// j++;
+					var sprite = new Coin();
+					sprite.setPosition( cc.p( c*30+10, ( this.HEIGHT - r - 1 )*30+10+150+this.nextMapIndicator ) );
+					this.addChild( sprite );
+					this.coinSprite.push( sprite );
 				}
 				if ( map[r][c] == "c" ) {
-					var wallSpritee = new CheckPoint( this.gameLayer, this );
-					wallSpritee.setPosition( cc.p( c*30, ( this.HEIGHT - r - 1 )*30+150+this.nextMapIndicator ) );
-					this.addChild( wallSpritee );
-					wallSpritee.scheduleUpdate();
-					this.checkPoint.push( wallSpritee );
-					console.log(this.checkPoint.length);
-					// this.checkPoint[k] = new CheckPoint( this.gameLayer, this );
-					// this.checkPoint[k].setPosition( cc.p( c*30, ( this.HEIGHT - r - 1 )*30+150+this.nextMapIndicator ) );
-					// this.addChild( this.checkPoint[k] );
-					// this.checkPoint[k].scheduleUpdate();
-					// k++;
+					var sprite = new CheckPoint( this.gameLayer, this );
+					sprite.setPosition( cc.p( c*30, ( this.HEIGHT - r - 1 )*30+150+this.nextMapIndicator ) );
+					this.addChild( sprite );
+					sprite.scheduleUpdate();
+					this.checkPoint.push( sprite );
+				}
+				if ( map[r][c] == "U" ) {
+					var sprite = new Urchin( this.gameLayer );
+					sprite.setPosition( cc.p( c*30, ( this.HEIGHT - r - 1 )*30+150+this.nextMapIndicator ) );
+					this.addChild( sprite );
+					sprite.scheduleUpdate();
+					this.urchin.push( sprite );
+				}
+				if ( map[r][c] == "B" ) {
+					var sprite = new BonusTime( this.gameLayer );
+					sprite.setPosition( cc.p( c*30, ( this.HEIGHT - r - 1 )*30+150+this.nextMapIndicator ) );
+					this.addChild( sprite );
+					sprite.scheduleUpdate();
+					this.bonusTime.push( sprite );
 				}
 			}
 		}
@@ -111,6 +86,20 @@ var Map = cc.Node.extend({
 				this.checkPoint.splice( i, 1 );
 			}
 		}
+
+		for ( var i = 0 ; i < this.urchin.length ; i++ ) {
+			if ( cc.rectGetMinY( this.urchin[i].getBoundingBoxToWorld() ) < 0 ) {
+				this.removeChild( this.urchin[i] );
+				this.urchin.splice( i, 1 );
+			}
+		}
+
+		for ( var i = 0 ; i < this.bonusTime.length ; i++ ) {
+			if ( cc.rectGetMinY( this.bonusTime[i].getBoundingBoxToWorld() ) < 0 ) {
+				this.removeChild( this.bonusTime[i] );
+				this.bonusTime.splice( i, 1 );
+			}
+		}
 	},
 
 	inactivateCheckPoint: function() {
@@ -123,13 +112,6 @@ var Map = cc.Node.extend({
 				console.log(this.mapLevel+": Before");
 				this.drawMap( Map.maps[this.mapLevel] );
 				console.log(this.mapLevel+": After");
-				//var y = cc.rectGetMinY( this.checkPoint[i].getBoundingBoxToWorld() );
-				// for ( var j = 0 ; j < this.checkPoint.length ; j++ ) {
-				// 	if ( y == cc.rectGetMinY( this.checkPoint[j].getBoundingBoxToWorld() ) ) {
-						
-				// 		this.checkPoint.splice( j, 1 );
-				// 	}
-				// }
 				console.log(this.checkPoint.length);
 				this.gameLayer.squid.initialScroll -= 600;
 				this.gameLayer.actionIsDone = false;
@@ -158,8 +140,8 @@ Map.maps = [
 [
 	'##########################ccc#', //30 x 20 size: 900 x 600
 	'#                            #',
-	'#   ******          *****    #',
-	'#   ######  #                #',
+	'#   *****B          *****    #',
+	'#   ######  U                #',
 	'#   ######  #                #',
 	'#   #       #   *********    #',
 	'#   #   ****#   #########    #',
