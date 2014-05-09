@@ -10,5 +10,6 @@ var g_resources = [
 	{ src: 'images/whiteResize.png' },
 	{ src: 'images/urchin20.png' },
 	{ src: 'images/bonusTime.png' },
-	{ src: 'images/squidRight.png' }
+	{ src: 'images/squidRight.png' },
+	{ src: 'sound/Coin Sound Effect.mp3' }
 ];

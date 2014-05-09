@@ -6,11 +6,9 @@ var GameLayer = cc.Layer.extend({
         this.setPosition( new cc.Point( this.gameLayerX, this.gameLayerY ) );
         this.setKeyboardEnabled( true );
 
-
         this.setAnchorPoint( cc.p( 0, 0 ) );
 
-        // var actionBy = cc.MoveTo.create( 1, cc.p( 0, -600 ) );
-        // this.runAction( actionBy );
+        this.parent = null;
 
         this.map = new Map( this );
         this.addChild( this.map );
@@ -21,6 +19,8 @@ var GameLayer = cc.Layer.extend({
         this.squid.scheduleUpdate();
 
         this.timeGauge = timeGauge;
+
+        // this.lives = lives;
 
         this.actionIsDone = false;
 
@@ -45,6 +45,14 @@ var GameLayer = cc.Layer.extend({
     addTimeGauge: function( timeGauge ) {
         this.timeGauge = timeGauge;
         // this.squid.addTimeGauge
+    },
+
+    addLives: function( lives ) {
+        this.lives = lives;
+    },
+
+    addStageLabel: function( stageLabel ) {
+        this.stageLabel = stageLabel;
     },
 
     onKeyDown: function( e ) {
@@ -76,6 +84,11 @@ var GameLayer = cc.Layer.extend({
         if ( e == cc.KEY.space ) {
             this.squid.isJump = false;
         }
+    },
+
+    deductHeart: function() {
+        this.getParent().removeChild( this.lives[this.lives.length-1] );
+        this.lives.pop();
     },
 
     update: function() {

@@ -64,6 +64,7 @@ var Squid = cc.Sprite.extend({
 		normalAni.setDelayPerUnit( 0.5 );
 		this.normalAction = cc.Animate.create( normalAni );
 
+
 	},
 
 	update: function( dt ) {
@@ -165,6 +166,7 @@ var Squid = cc.Sprite.extend({
 			if ( this.collideWith( this.coinSprite[i] ) ) {
 				this.map.removeCoin(i);
 				this.score++;
+				cc.AudioEngine.getInstance().playEffect( 'sound/Coin Sound Effect.mp3' );
 				this.scoreLabel.setString("score : "+this.score);
 			}
 		}
@@ -284,7 +286,7 @@ var Squid = cc.Sprite.extend({
 		this.vy = 0;
 		this.unscheduleUpdate();
 		var dieAction = null;
-		if ( this.life == 0 )
+		if ( this.life <= 0 )
 			dieAction = cc.MoveBy.create( 3, cc.p( 0, -700 ) );
 		else
 			dieAction = cc.MoveBy.create( 80, cc.p( 0, -700 ) );
