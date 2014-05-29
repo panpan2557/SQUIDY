@@ -4,6 +4,8 @@ var Squid = cc.Sprite.extend({
 		this.initWithFile('images/squidUp.png');
 		this.setAnchorPoint( cc.p( 0, 0 ) );
 		this.map = map;
+
+		//squid's attributes
 		this.coinSprite = this.map.coinSprite;
 		this.collidedCoinIndex = -1;
 		this.score = 0;
@@ -42,7 +44,7 @@ var Squid = cc.Sprite.extend({
 		this.squidMinX = null;
 		this.squidMinY = null;
 
-
+		//Animation creation
 		var jumpAni = new cc.Animation.create();
 		jumpAni.addSpriteFrameWithFile( 'images/squidUp.png' );
 		jumpAni.addSpriteFrameWithFile( 'images/squidDown.png' );
@@ -64,16 +66,14 @@ var Squid = cc.Sprite.extend({
 		normalAni.setDelayPerUnit( 0.5 );
 		this.normalAction = cc.Animate.create( normalAni );
 
-
 	},
 
 	update: function( dt ) {
 		if ( this.started ) {
-			if ( this.life == 0 ) {
-				this.die();
-			}
 
-			this.squidBox =  this.getBoundingBox();
+			this.dieCondition();
+
+			this.resetSquidBox();
 			
 			this.resetCollisionDir();
 			
@@ -88,7 +88,18 @@ var Squid = cc.Sprite.extend({
 			this.normalUpdatePosition(); //normal update
 
 			this.updatePosition();
+
 		}
+	},
+
+	dieCondition: function() {
+		if ( this.life == 0 ) {
+			this.die();
+		}
+	},
+
+	resetSquidBox: function() {
+		this.squidBox =  this.getBoundingBox();
 	},
 
 	resetCollisionDir: function() {
@@ -222,7 +233,8 @@ var Squid = cc.Sprite.extend({
 			}
 		}
 
-		if ( !this.isRight && !this.isLeft && !this.isJump ) { //if you aren't press any
+		//if you aren't press any
+		if ( !this.isRight && !this.isLeft && !this.isJump ) { 
 			this.runAction( this.normalAction );
 		}
 	},
@@ -266,19 +278,6 @@ var Squid = cc.Sprite.extend({
 	jump: function() {
 		this.vy = Squid.JUMPING_VELOCITY;
 		this.runAction( this.jumpingAction );
-	},
-
-	hurt: function( amount ) {
-		console.log("it's hurt!");
-		if ( this.life -= amount < 0 ) {
-			this.life = 0;
-		} else {
-			this.life -= amount;
-		}
-		//run hurt animation
-		if ( this.life <= 0 ) {
-			this.die();
-		}
 	},
 
 	die: function() {
